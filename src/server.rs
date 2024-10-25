@@ -1,5 +1,7 @@
+use std::io::Write;
 use std::net::TcpListener;
 use anyhow::Result;
+use crate::http::response::ok::OkResponse;
 
 pub struct Server {
     host: String,
@@ -20,8 +22,9 @@ impl Server {
         let listener = TcpListener::bind(self.addr())?;
         for stream in listener.incoming() {
             match stream {
-                Ok(_stream) => {
+                Ok(mut stream) => {
                     println!("Accepcted new connection!");
+                    stream.write(&OkResponse::get_response())?;
                 },
                 Err(e) => {
                     println!("error: {}", e)
